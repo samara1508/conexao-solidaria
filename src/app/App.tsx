@@ -5,20 +5,19 @@ import {
   ArrowUp, ArrowDown, BarChart2, Search, ArrowLeftRight,
   ChevronRight, ChevronLeft, ChevronDown,
   Eye, EyeOff,
+  CirclePlus, HandHeart, Boxes,
 } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import heroImage  from "@/imports/image.png";
 import logoIcon   from "@/imports/Gemini_Generated_Image_s27eeas27eeas27e.png";
-import icon1      from "@/imports/image-7.png";    // Registrar doação recebida  (teal box+heart)
-import icon2      from "@/imports/image-15.png";   // Cadastrar novo item         (circle+plus)
-import icon3      from "@/imports/image-9.png";    // Registrar doação realizada  (hand+heart)
-import icon4      from "@/imports/image-10.png";   // Cadastrar família           (people)
-import icon5      from "@/imports/image-17.png";   // Consultar histórico         (logo coração)
-import icon6      from "@/imports/image-16.png";   // Consultar estoque           (caixas empilhadas)
 
 import { FamiliasPage }     from "@/app/FamiliasPage";
 import { InstituicoesPage } from "@/app/InstituicoesPage";
 import { EstoquePage }      from "@/app/EstoquePage";
+import { ItensPage }        from "@/app/ItensPage";
+import { UsuariosPage }     from "@/app/UsuariosPage";
+import { HistDoacoesPage }  from "@/app/HistDoacoesPage";
+import { MovEstoquePage }   from "@/app/MovEstoquePage";
 
 // ─── palette ─────────────────────────────────────────────────────
 const P = {
@@ -37,22 +36,14 @@ const P = {
   sidebarActive:"#2b65bf",
 };
 
-// ─── icon color filters ───────────────────────────────────────────
-const FILTER = {
-  shift: "hue-rotate(32deg) saturate(0.78) brightness(1.12)",
-  black: "brightness(0) invert(35%) sepia(90%) saturate(350%) hue-rotate(179deg) brightness(1.15)",
-  navy:  "hue-rotate(2deg) saturate(2) brightness(1.55)",
-  logo:  "hue-rotate(8deg) saturate(1.15) brightness(0.92)",
-};
-
 // ─── carousel actions ─────────────────────────────────────────────
 const ACTIONS = [
-  { label: "Registrar doação recebida",       icon: icon1, filter: FILTER.shift, size: "w-16 h-16" },
-  { label: "Cadastrar novo item",              icon: icon2, filter: FILTER.navy,  size: "w-20 h-20" },
-  { label: "Registrar doação realizada",       icon: icon3, filter: FILTER.black, size: "w-16 h-16" },
-  { label: "Cadastrar família",                icon: icon4, filter: FILTER.black, size: "w-16 h-16" },
-  { label: "Consultar histórico das famílias", icon: icon5, filter: FILTER.logo,  size: "w-20 h-20" },
-  { label: "Consultar estoque instituições",   icon: icon6, filter: FILTER.navy,  size: "w-20 h-20" },
+  { label: "Registrar doação recebida",       icon: Gift },
+  { label: "Cadastrar novo item",              icon: CirclePlus },
+  { label: "Registrar doação realizada",       icon: HandHeart },
+  { label: "Cadastrar família",                icon: Users },
+  { label: "Consultar histórico das famílias", icon: Search },
+  { label: "Consultar estoque instituições",   icon: Boxes },
 ];
 
 const CARDS_PER_PAGE = 4;
@@ -95,6 +86,15 @@ const NAV_TREE: (NavLeaf | NavGroup)[] = [
 function Sidebar({ activeId, onSelect }: { activeId: string; onSelect: (id: string) => void }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({ cadastros: true });
   const toggle = (id: string) => setExpanded(p => ({ ...p, [id]: !p[id] }));
+
+  useEffect(() => {
+    const parentGroup = NAV_TREE.find(
+      item => "children" in item && item.children.some(c => c.id === activeId)
+    );
+    if (parentGroup) {
+      setExpanded(p => ({ ...p, [parentGroup.id]: true }));
+    }
+  }, [activeId]);
 
   const itemStyle = (active: boolean) => ({
     background: active ? P.sidebarActive : "transparent",
@@ -219,9 +219,34 @@ function TopBar({ username, onLogout }: { username: string; onLogout: () => void
 // ════════════════════════════════════════════════════════════════
 //  HOME CONTENT (carousel)
 // ════════════════════════════════════════════════════════════════
-function HomeContent({ username }: { username: string }) {
+function HomeContent({ username, onNavigate }: { username: string; onNavigate: (navId: string, view?: 'list' | 'form') => void }) {
   const [carouselPage, setCarouselPage] = useState(0);
   const pageActions = ACTIONS.slice(carouselPage * CARDS_PER_PAGE, carouselPage * CARDS_PER_PAGE + CARDS_PER_PAGE);
+
+  const handleActionClick = (label: string) => {
+    switch (label) {
+      case "Registrar doação recebida":
+        onNavigate("entrada");
+        break;
+      case "Cadastrar novo item":
+        onNavigate("itens", "form");
+        break;
+      case "Registrar doação realizada":
+        onNavigate("saida");
+        break;
+      case "Cadastrar família":
+        onNavigate("familias", "form");
+        break;
+      case "Consultar histórico das famílias":
+        onNavigate("hist-doacoes");
+        break;
+      case "Consultar estoque instituições":
+        // Não faz nada (planejando)
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="flex-1 overflow-y-auto px-8 py-8">
@@ -248,18 +273,22 @@ function HomeContent({ username }: { username: string }) {
           {/* Cards */}
           <div className="flex-1 grid gap-5"
             style={{ gridTemplateColumns: `repeat(${Math.min(pageActions.length, 4)}, 1fr)` }}>
-            {pageActions.map((action, i) => (
-              <button key={carouselPage * CARDS_PER_PAGE + i}
-                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl transition-all text-center active:scale-95"
-                style={{ background: P.surface, boxShadow: "0 2px 12px rgba(26,39,68,0.08)", border: `1.5px solid ${P.inputBorder}`, minHeight: "180px" }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(43,101,191,0.18)"; e.currentTarget.style.borderColor = P.tealLight; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 12px rgba(26,39,68,0.08)"; e.currentTarget.style.borderColor = P.inputBorder; e.currentTarget.style.transform = "none"; }}>
-                <div className={`${action.size} flex items-center justify-center`}>
-                  <ImageWithFallback src={action.icon} alt={action.label} className="w-full h-full object-contain" style={{ filter: action.filter }} />
-                </div>
-                <span className="text-sm font-medium leading-snug" style={{ color: P.label }}>{action.label}</span>
-              </button>
-            ))}
+            {pageActions.map((action, i) => {
+              const Icon = action.icon;
+              return (
+                <button key={carouselPage * CARDS_PER_PAGE + i}
+                  onClick={() => handleActionClick(action.label)}
+                  className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl transition-all text-center active:scale-95 cursor-pointer"
+                  style={{ background: P.surface, boxShadow: "0 2px 12px rgba(26,39,68,0.08)", border: `1.5px solid ${P.inputBorder}`, minHeight: "180px" }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(43,101,191,0.18)"; e.currentTarget.style.borderColor = P.tealLight; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 12px rgba(26,39,68,0.08)"; e.currentTarget.style.borderColor = P.inputBorder; e.currentTarget.style.transform = "none"; }}>
+                  <div className="w-16 h-16 flex items-center justify-center">
+                    <Icon size={52} strokeWidth={1.5} style={{ color: P.blue }} />
+                  </div>
+                  <span className="text-sm font-medium leading-snug" style={{ color: P.label }}>{action.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Right arrow */}
@@ -294,15 +323,25 @@ function HomeContent({ username }: { username: string }) {
 // ════════════════════════════════════════════════════════════════
 function AppShell({ username, onLogout }: { username: string; onLogout: () => void }) {
   const [activeNav, setActiveNav] = useState("inicio");
+  const [initialView, setInitialView] = useState<'list' | 'form'>('list');
+
+  const handleNavigate = (navId: string, view: 'list' | 'form' = 'list') => {
+    setActiveNav(navId);
+    setInitialView(view);
+  };
 
   const renderContent = () => {
     switch (activeNav) {
-      case "familias":     return <FamiliasPage />;
+      case "familias":     return <FamiliasPage initialView={initialView} key={`familias-${initialView}`} />;
       case "instituicoes": return <InstituicoesPage />;
-      case "entrada":      return <EstoquePage tipoInicial="ENTRADA" />;
-      case "saida":        return <EstoquePage tipoInicial="SAIDA" />;
+      case "itens":        return <ItensPage initialView={initialView} key={`itens-${initialView}`} />;
+      case "usuarios":     return <UsuariosPage />;
+      case "hist-doacoes": return <HistDoacoesPage />;
+      case "mov-estoque":  return <MovEstoquePage />;
+      case "entrada":      return <EstoquePage tipoInicial="ENTRADA" key="entrada" />;
+      case "saida":        return <EstoquePage tipoInicial="SAIDA" key="saida" />;
       case "inicio":
-      default:             return <HomeContent username={username} />;
+      default:             return <HomeContent username={username} onNavigate={handleNavigate} />;
     }
   };
 

@@ -72,6 +72,7 @@ export interface Item {
   ativo: boolean;
   exigeControleValidade: boolean;
   estoque: number;
+  tamanho?: string;
 }
 
 export interface ItemMovimento {
@@ -81,3 +82,48 @@ export interface ItemMovimento {
   unidade: UnidadeMedida;
   estoqueAtual: number;
 }
+
+export type StatusUsuario = 'ativo' | 'inativo';
+
+export interface Usuario {
+  id: number;
+  nome: string;
+  nomeUsuario: string;
+  senha?: string;
+  dominio: string;
+  email: string;
+  status: StatusUsuario;
+  cpf: string;
+  isAdmin: boolean;
+}
+
+export interface DoacaoFamiliaItem {
+  nome: string;
+  categoria: CategoriaItem;
+  quantidade: number;
+  unidade: UnidadeMedida;
+}
+
+export interface DoacaoFamilia {
+  id: number;
+  instituicaoNome: string;
+  instituicaoCnpj: string;
+  familiaResponsavel: string;
+  familiaCpf: string;
+  data: string;
+  itens: DoacaoFamiliaItem[];
+}
+
+export interface MovimentacaoEstoque {
+  id: number;
+  instituicaoNome: string;
+  tipoMovimento: TipoMovimento;
+  transacao: TipoTransacao;
+  emitente: string;
+  destinatario: string;
+  quantidade: number;
+  dataHora: string;
+  observacao: string;
+}
+
+

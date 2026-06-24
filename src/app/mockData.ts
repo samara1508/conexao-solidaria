@@ -1,4 +1,4 @@
-import { Familia, Instituicao, Item } from './types';
+import { Familia, Instituicao, Item, Usuario, DoacaoFamilia, MovimentacaoEstoque } from './types';
 
 export const MOCK_FAMILIAS: Familia[] = [
   {
@@ -191,4 +191,123 @@ export const MOCK_ITENS: Item[] = [
   { id: 6, nome: 'Sabonete (90g)', descricao: 'Sabonete barra', codigoBarras: '7891234567895', categoria: 'HIGIENE_PESSOAL', unidadeMedida: 'UNIDADE', dataCadastro: '2026-06-21', ativo: true, exigeControleValidade: false, estoque: 50 },
   { id: 7, nome: 'Detergente Ypê (500ml)', descricao: 'Detergente neutro', codigoBarras: '7891234567896', categoria: 'LIMPEZA', unidadeMedida: 'UNIDADE', dataCadastro: '2026-06-21', ativo: true, exigeControleValidade: false, estoque: 22 },
   { id: 8, nome: 'Fralda Descartável M (pacote 20un)', descricao: 'Fraldas tamanho M', codigoBarras: '7891234567897', categoria: 'HIGIENE_PESSOAL', unidadeMedida: 'PACOTE', dataCadastro: '2026-06-22', ativo: true, exigeControleValidade: false, estoque: 10 },
+  { id: 9, nome: 'Casaco de Lã Infantil', descricao: 'Casaco de frio de lã para inverno', codigoBarras: '7891234567898', categoria: 'VESTUARIO', unidadeMedida: 'UNIDADE', dataCadastro: '2026-06-22', ativo: true, exigeControleValidade: false, estoque: 8, tamanho: 'G (Infantil)' },
+  { id: 10, nome: 'Sapato Social Masculino', descricao: 'Sapato social de couro preto', codigoBarras: '7891234567899', categoria: 'VESTUARIO', unidadeMedida: 'PAR', dataCadastro: '2026-06-22', ativo: true, exigeControleValidade: false, estoque: 15, tamanho: '41' },
+  { id: 11, nome: 'Calça Jeans Juvenil', descricao: 'Calça jeans azul unissex', codigoBarras: '7891234567900', categoria: 'VESTUARIO', unidadeMedida: 'UNIDADE', dataCadastro: '2026-06-22', ativo: true, exigeControleValidade: false, estoque: 12, tamanho: '14' },
+];
+
+export const MOCK_USUARIOS: Usuario[] = [
+  { id: 1, nome: 'Ivone do Carmo', nomeUsuario: 'ivone16', senha: '123456', dominio: 'caritas', email: 'ivone.carmo@gmail.com', status: 'ativo', cpf: '12345678901', isAdmin: false },
+  { id: 2, nome: 'Admin Geral', nomeUsuario: 'admin', senha: 'adminpassword', dominio: 'caritas', email: 'admin@caritas.org', status: 'ativo', cpf: '98765432100', isAdmin: true },
+  { id: 3, nome: 'José da Silva', nomeUsuario: 'jose.silva', senha: 'password123', dominio: 'caritas', email: 'jose.silva@caritas.org', status: 'inativo', cpf: '11122233344', isAdmin: false },
+];
+
+export const MOCK_DOACOES_FAMILIAS: DoacaoFamilia[] = [
+  {
+    id: 1,
+    instituicaoNome: 'Conexão Solidária Central',
+    instituicaoCnpj: '12345678000100',
+    familiaResponsavel: 'Elizete da Silva',
+    familiaCpf: '12345678901',
+    data: '2026-06-23',
+    itens: [
+      { nome: 'Arroz Branco Tio Juca Tipo 1 (1kg)', categoria: 'ALIMENTO', quantidade: 5, unidade: 'KG' },
+      { nome: 'Feijão Preto (1kg)', categoria: 'ALIMENTO', quantidade: 3, unidade: 'KG' },
+      { nome: 'Sabonete (90g)', categoria: 'HIGIENE_PESSOAL', quantidade: 5, unidade: 'UNIDADE' }
+    ]
+  },
+  {
+    id: 2,
+    instituicaoNome: 'Filial Norte',
+    instituicaoCnpj: '12345678000281',
+    familiaResponsavel: 'João Carlos Pereira',
+    familiaCpf: '98765432100',
+    data: '2026-06-24',
+    itens: [
+      { nome: 'Macarrão Espaguete (500g)', categoria: 'ALIMENTO', quantidade: 10, unidade: 'PACOTE' },
+      { nome: 'Óleo de Soja (900ml)', categoria: 'ALIMENTO', quantidade: 4, unidade: 'LITRO' }
+    ]
+  },
+  {
+    id: 3,
+    instituicaoNome: 'Filial Sul',
+    instituicaoCnpj: '12345678000362',
+    familiaResponsavel: 'Maria Aparecida Santos',
+    familiaCpf: '11122233344',
+    data: '2026-06-22',
+    itens: [
+      { nome: 'Fralda Descartável M (pacote 20un)', categoria: 'HIGIENE_PESSOAL', quantidade: 2, unidade: 'PACOTE' },
+      { nome: 'Shampoo Anticaspa (200ml)', categoria: 'HIGIENE_PESSOAL', quantidade: 1, unidade: 'UNIDADE' },
+      { nome: 'Sabonete (90g)', categoria: 'HIGIENE_PESSOAL', quantidade: 10, unidade: 'UNIDADE' }
+    ]
+  }
+];
+
+export const MOCK_MOVIMENTACOES_ESTOQUE: MovimentacaoEstoque[] = [
+  {
+    id: 1,
+    instituicaoNome: 'Conexão Solidária Central',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Supermercado Compre Bem',
+    destinatario: 'Conexão Solidária Central',
+    quantidade: 150,
+    dataHora: '2026-06-20T09:30:00',
+    observacao: 'Carga recebida em bom estado. Alimentos diversos.'
+  },
+  {
+    id: 2,
+    instituicaoNome: 'Conexão Solidária Central',
+    tipoMovimento: 'SAIDA',
+    transacao: 'TRANSFERENCIA',
+    emitente: 'Conexão Solidária Central',
+    destinatario: 'Filial Norte',
+    quantidade: 50,
+    dataHora: '2026-06-21T14:15:00',
+    observacao: 'Transferência de mantimentos para reforço no estoque.'
+  },
+  {
+    id: 3,
+    instituicaoNome: 'Filial Norte',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'TRANSFERENCIA',
+    emitente: 'Conexão Solidária Central',
+    destinatario: 'Filial Norte',
+    quantidade: 50,
+    dataHora: '2026-06-21T15:00:00',
+    observacao: 'Recebimento de carga de transferência.'
+  },
+  {
+    id: 4,
+    instituicaoNome: 'Filial Norte',
+    tipoMovimento: 'SAIDA',
+    transacao: 'DOACAO',
+    emitente: 'Filial Norte',
+    destinatario: 'Família Elizete da Silva',
+    quantidade: 13,
+    dataHora: '2026-06-23T10:45:00',
+    observacao: 'Cesta básica padrão entregue diretamente ao beneficiário.'
+  },
+  {
+    id: 5,
+    instituicaoNome: 'Filial Sul',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Mesa Brasil SESC',
+    destinatario: 'Filial Sul',
+    quantidade: 300,
+    dataHora: '2026-06-22T08:00:00',
+    observacao: 'Grande lote de produtos de higiene e limpeza doado.'
+  },
+  {
+    id: 6,
+    instituicaoNome: 'Filial Sul',
+    tipoMovimento: 'SAIDA',
+    transacao: 'DOACAO',
+    emitente: 'Filial Sul',
+    destinatario: 'Família Maria Aparecida Santos',
+    quantidade: 13,
+    dataHora: '2026-06-22T16:30:00',
+    observacao: 'Produtos de higiene pessoal entregues.'
+  }
 ];

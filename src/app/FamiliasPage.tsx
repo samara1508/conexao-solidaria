@@ -445,11 +445,11 @@ function FamiliaForm({
 // ════════════════════════════════════════════════════════════════
 //  FAMILIAS PAGE (LIST)
 // ════════════════════════════════════════════════════════════════
-export function FamiliasPage() {
+export function FamiliasPage({ initialView }: { initialView?: 'list' | 'form' }) {
   const [familias, setFamilias] = useState<Familia[]>(MOCK_FAMILIAS);
-  const [view, setView] = useState<'list' | 'form'>('list');
+  const [view, setView] = useState<'list' | 'form'>(initialView ?? 'list');
   const [selected, setSelected] = useState<Familia | null>(null);
-  const [formMode, setFormMode] = useState<'new' | 'edit' | 'view'>('new');
+  const [formMode, setFormMode] = useState<'new' | 'edit' | 'view'>(initialView === 'form' ? 'new' : 'new');
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<SituacaoCadastro | 'ALL'>('ALL');
   const [showFilters, setShowFilters] = useState(false);
