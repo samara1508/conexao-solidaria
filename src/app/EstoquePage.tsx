@@ -4,8 +4,8 @@ import {
   Search, Plus, X, CheckCircle2, Building2, User,
   ChevronDown, AlertTriangle,
 } from 'lucide-react';
-import { TipoMovimento, TipoTransacao, Item, ItemMovimento } from './types';
-import { MOCK_ITENS, MOCK_FAMILIAS, MOCK_INSTITUICOES } from './mockData';
+import { TipoMovimento, TipoTransacao, Item, ItemMovimento, Doador } from './types';
+import { MOCK_ITENS, MOCK_FAMILIAS, MOCK_INSTITUICOES, MOCK_DOADORES } from './mockData';
 
 const BIG = 'text-base'; // accessible base size for this form
 
@@ -60,7 +60,7 @@ function Combobox<T extends { id: number }>({
         />
       </div>
       {open && filtered.length > 0 && (
-        <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-white rounded-xl border border-[#d0daef] shadow-lg overflow-hidden max-h-56 overflow-y-auto">
+        <div className="mt-2 bg-white rounded-xl border border-[#d0daef] overflow-hidden max-h-56 overflow-y-auto">
           {filtered.map(o => (
             <button key={o.id} onMouseDown={() => { onSelect(o); setQuery(''); setOpen(false); }}
               className="w-full px-4 py-3 text-left hover:bg-[#f0f4fb] transition-colors border-b border-[#f0f4fb] last:border-0">
@@ -149,7 +149,7 @@ export function EstoquePage({ tipoInicial }: { tipoInicial: TipoMovimento }) {
   const [emitente, setEmitente] = useState<typeof MOCK_INSTITUICOES[0] | null>(null);
   const [familia, setFamilia] = useState<typeof MOCK_FAMILIAS[0] | null>(null);
   const [instDest, setInstDest] = useState<typeof MOCK_INSTITUICOES[0] | null>(null);
-  const [doador, setDoador] = useState('');
+  const [doador, setDoador] = useState<Doador | null>(null);
   const [itens, setItens] = useState<ItemMovimento[]>([]);
   const [observacao, setObservacao] = useState('');
   const [itemSearch, setItemSearch] = useState('');
@@ -159,6 +159,7 @@ export function EstoquePage({ tipoInicial }: { tipoInicial: TipoMovimento }) {
 
   const instOptions = MOCK_INSTITUICOES.filter(i => i.situacaoCadastro === 'ATIVO');
   const familiaOptions = MOCK_FAMILIAS.filter(f => f.situacaoCadastro === 'ATIVO');
+  const doadorOptions = MOCK_DOADORES.filter(d => d.status === 'ativo');
 
   const itemsFiltered = useMemo(() =>
     MOCK_ITENS.filter(i => i.ativo && !itens.find(x => x.itemId === i.id) &&
@@ -184,7 +185,7 @@ export function EstoquePage({ tipoInicial }: { tipoInicial: TipoMovimento }) {
     if (!emitente) errs.push('Selecione o emitente (instituição que realiza o movimento).');
     if (tipo === 'SAIDA' && transacao === 'DOACAO' && !familia) errs.push('Selecione a família beneficiária.');
     if (transacao === 'TRANSFERENCIA' && !instDest) errs.push('Selecione a instituição destinatária/de origem.');
-    if (tipo === 'ENTRADA' && transacao === 'DOACAO' && !doador.trim()) errs.push('Informe o nome do doador.');
+    if (tipo === 'ENTRADA' && transacao === 'DOACAO' && !doador) errs.push('Selecione o doador cadastrado.');
     if (itens.length === 0) errs.push('Adicione ao menos um item ao movimento.');
     setErrors(errs);
     return errs.length === 0;
@@ -196,7 +197,7 @@ export function EstoquePage({ tipoInicial }: { tipoInicial: TipoMovimento }) {
     setTimeout(() => {
       setSuccessMsg(false);
       setTipo(tipoInicial); setTransacao('DOACAO');
-      setEmitente(null); setFamilia(null); setInstDest(null); setDoador('');
+      setEmitente(null); setFamilia(null); setInstDest(null); setDoador(null);
       setItens([]); setObservacao(''); setErrors([]);
     }, 2500);
   };
@@ -274,12 +275,16 @@ export function EstoquePage({ tipoInicial }: { tipoInicial: TipoMovimento }) {
           <Section num={4} title={destLabel}>
             {isEntrada && isDoacao ? (
               <div>
-                <p className="text-sm text-[#6b7a9e] mb-3">Informe o nome completo do doador ou organização.</p>
-                <input
-                  className={`w-full px-4 py-3 rounded-xl border-2 border-[#d0daef] bg-[#f0f4fb] outline-none transition-all focus:border-[#2b65bf] focus:bg-white ${BIG} text-[#1a2744]`}
-                  placeholder="Nome do doador ou organização..."
+                <p className="text-sm text-[#6b7a9e] mb-3">Selecione o doador cadastrado que realiza a doação.</p>
+                <Combobox
+                  placeholder="Buscar doador por nome, e-mail ou CPF/CNPJ..."
                   value={doador}
-                  onChange={e => setDoador(e.target.value)}
+                  displayValue={d => `${d.nome} — ${d.cpfCnpj.length === 11 ? fmtCPF(d.cpfCnpj) : fmtCNPJ(d.cpfCnpj)}`}
+                  options={doadorOptions}
+                  getLabel={d => d.nome}
+                  getSub={d => `E-mail: ${d.email} | CPF/CNPJ: ${d.cpfCnpj.length === 11 ? fmtCPF(d.cpfCnpj) : fmtCNPJ(d.cpfCnpj)}`}
+                  onSelect={setDoador}
+                  onClear={() => setDoador(null)}
                 />
               </div>
             ) : tipo === 'SAIDA' && isDoacao ? (

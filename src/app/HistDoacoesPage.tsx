@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
   Search, Eye, ChevronUp, ChevronDown,
-  ChevronsUpDown, X, List,
+  ChevronsUpDown, X, List, SlidersHorizontal,
 } from 'lucide-react';
 import { DoacaoFamilia, CategoriaItem, UnidadeMedida } from './types';
 import { MOCK_DOACOES_FAMILIAS } from './mockData';
@@ -99,15 +99,36 @@ export function HistDoacoesPage() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [page, setPage] = useState(0);
   const [perPage] = useState(10);
+  const [filterInstituicao, setFilterInstituicao] = useState<string>('ALL');
+  const [dataInicio, setDataInicio] = useState<string>('');
+  const [dataFim, setDataFim] = useState<string>('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  const instituicoesOptions = useMemo(() => {
+    const list = doacoes.map(d => d.instituicaoNome);
+    return Array.from(new Set(list));
+  }, [doacoes]);
 
   const filtered = useMemo(() => {
     let r = doacoes.filter(d => {
       const q = search.toLowerCase();
-      return !q || 
+      const matchSearch = !q || 
         d.instituicaoNome.toLowerCase().includes(q) || 
         d.instituicaoCnpj.includes(q) || 
         d.familiaResponsavel.toLowerCase().includes(q) || 
         d.familiaCpf.includes(q);
+
+      const matchInstituicao = filterInstituicao === 'ALL' || d.instituicaoNome === filterInstituicao;
+
+      let matchDate = true;
+      if (dataInicio) {
+        matchDate = matchDate && d.data >= dataInicio;
+      }
+      if (dataFim) {
+        matchDate = matchDate && d.data.slice(0, 10) <= dataFim;
+      }
+
+      return matchSearch && matchInstituicao && matchDate;
     });
     r.sort((a, b) => {
       const av = (a as any)[sortField] ?? '';
@@ -115,7 +136,7 @@ export function HistDoacoesPage() {
       return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
     });
     return r;
-  }, [doacoes, search, sortField, sortDir]);
+  }, [doacoes, search, filterInstituicao, dataInicio, dataFim, sortField, sortDir]);
 
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / perPage));
@@ -138,13 +159,44 @@ export function HistDoacoesPage() {
       </div>
 
       {/* Control Bar */}
-      <div className="flex items-center gap-3 px-8 py-4 bg-white border-b border-[#e4e9f4] shrink-0">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={17} />
-          <input type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(0); }}
-            placeholder="Pesquisar por instituição, família, CNPJ ou CPF..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl text-sm border outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 bg-[#f0f4fb] border-[#d0daef] text-[#1a2744]" />
+      <div className="flex flex-col gap-4 px-8 py-4 bg-white border-b border-[#e4e9f4] shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={17} />
+            <input type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(0); }}
+              placeholder="Pesquisar por instituição, família, CNPJ ou CPF..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl text-sm border outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 bg-[#f0f4fb] border-[#d0daef] text-[#1a2744]" />
+          </div>
+          <button onClick={() => setShowFilters(s => !s)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${showFilters ? 'bg-blue-50 border-blue-200 text-[#2b65bf]' : 'border-[#d0daef] text-[#3d4f72] hover:bg-[#f0f4fb]'}`}>
+            <SlidersHorizontal size={15} /> Filtros
+          </button>
         </div>
+
+        {showFilters && (
+          <div className="flex gap-4 p-4 rounded-xl border border-[#d0daef] bg-[#f8fafc]">
+            <div className="w-48">
+              <label className="block text-xs font-semibold text-[#3d4f72] mb-1.5">Instituição</label>
+              <select value={filterInstituicao} onChange={e => { setFilterInstituicao(e.target.value); setPage(0); }}
+                className="w-full rounded-lg px-2.5 py-1.5 text-xs border outline-none bg-white border-[#d0daef] text-[#1a2744]">
+                <option value="ALL">Todas as Instituições</option>
+                {instituicoesOptions.map(inst => (
+                  <option key={inst} value={inst}>{inst}</option>
+                ))}
+              </select>
+            </div>
+            <div className="w-40">
+              <label className="block text-xs font-semibold text-[#3d4f72] mb-1.5">Data Início</label>
+              <input type="date" value={dataInicio} onChange={e => { setDataInicio(e.target.value); setPage(0); }}
+                className="w-full rounded-lg px-2.5 py-1.5 text-xs border outline-none bg-white border-[#d0daef] text-[#1a2744]" />
+            </div>
+            <div className="w-40">
+              <label className="block text-xs font-semibold text-[#3d4f72] mb-1.5">Data Fim</label>
+              <input type="date" value={dataFim} onChange={e => { setDataFim(e.target.value); setPage(0); }}
+                className="w-full rounded-lg px-2.5 py-1.5 text-xs border outline-none bg-white border-[#d0daef] text-[#1a2744]" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Grid List */}

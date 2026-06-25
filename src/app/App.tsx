@@ -5,7 +5,7 @@ import {
   ArrowUp, ArrowDown, BarChart2, Search, ArrowLeftRight,
   ChevronRight, ChevronLeft, ChevronDown,
   Eye, EyeOff,
-  CirclePlus, HandHeart, Boxes,
+  CirclePlus, HandHeart, Boxes, Heart, Handshake, Stethoscope,
 } from "lucide-react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import heroImage  from "@/imports/image.png";
@@ -18,6 +18,11 @@ import { ItensPage }        from "@/app/ItensPage";
 import { UsuariosPage }     from "@/app/UsuariosPage";
 import { HistDoacoesPage }  from "@/app/HistDoacoesPage";
 import { MovEstoquePage }   from "@/app/MovEstoquePage";
+import { DoadoresPage }     from "@/app/DoadoresPage";
+import { ParceirosPage }    from "@/app/ParceirosPage";
+import { Dashboard }        from "@/app/components/Dashboard";
+import { EstoqueInstPage }  from "@/app/EstoqueInstPage";
+import { AtendimentosPage } from "@/app/AtendimentosPage";
 
 // ─── palette ─────────────────────────────────────────────────────
 const P = {
@@ -60,6 +65,8 @@ const NAV_TREE: (NavLeaf | NavGroup)[] = [
     children: [
       { id: "familias",     label: "Famílias",     icon: Users    },
       { id: "usuarios",     label: "Usuários",     icon: User     },
+      { id: "doadores",     label: "Doadores",     icon: Heart    },
+      { id: "parceiros",    label: "Parceiros",    icon: Handshake},
       { id: "itens",        label: "Itens",        icon: Gift     },
       { id: "instituicoes", label: "Instituições", icon: Building2},
     ],
@@ -76,25 +83,38 @@ const NAV_TREE: (NavLeaf | NavGroup)[] = [
     children: [
       { id: "hist-doacoes", label: "Histórico doações famílias", icon: Search         },
       { id: "mov-estoque",  label: "Movimentação estoque",       icon: ArrowLeftRight },
+      { id: "estoque-instituicao", label: "Estoque por instituição", icon: Boxes },
     ],
   },
+  { id: "atendimentos", label: "Atendimentos", icon: Stethoscope },
 ];
 
 // ════════════════════════════════════════════════════════════════
 //  SIDEBAR
 // ════════════════════════════════════════════════════════════════
-function Sidebar({ activeId, onSelect }: { activeId: string; onSelect: (id: string) => void }) {
+function Sidebar({
+  activeId,
+  onSelect,
+  isCollapsed,
+  onToggleCollapse
+}: {
+  activeId: string;
+  onSelect: (id: string) => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({ cadastros: true });
   const toggle = (id: string) => setExpanded(p => ({ ...p, [id]: !p[id] }));
 
   useEffect(() => {
+    if (isCollapsed) return; // Do not auto-expand groups if collapsed
     const parentGroup = NAV_TREE.find(
       item => "children" in item && item.children.some(c => c.id === activeId)
     );
     if (parentGroup) {
       setExpanded(p => ({ ...p, [parentGroup.id]: true }));
     }
-  }, [activeId]);
+  }, [activeId, isCollapsed]);
 
   const itemStyle = (active: boolean) => ({
     background: active ? P.sidebarActive : "transparent",
@@ -102,12 +122,38 @@ function Sidebar({ activeId, onSelect }: { activeId: string; onSelect: (id: stri
   });
 
   return (
-    <aside className="flex flex-col w-56 shrink-0 py-6 px-3 gap-0.5 overflow-y-auto" style={{ background: P.sidebarBg }}>
-      {/* Logo */}
-      <div className="flex items-center gap-2 px-3 mb-6">
-        <ImageWithFallback src={logoIcon} alt="Conexão Solidária" className="w-9 h-9 object-contain shrink-0" />
-        <span className="text-white font-semibold text-sm leading-tight">Conexão<br/>Solidária</span>
-      </div>
+    <aside
+      className="flex flex-col shrink-0 py-6 gap-0.5 overflow-y-auto transition-all duration-300"
+      style={{
+        background: P.sidebarBg,
+        width: isCollapsed ? "64px" : "224px",
+        paddingLeft: isCollapsed ? "8px" : "12px",
+        paddingRight: isCollapsed ? "8px" : "12px",
+      }}
+    >
+      {/* Logo / Toggle button */}
+      {isCollapsed ? (
+        <div className="flex flex-col items-center gap-3 mb-6">
+          <ImageWithFallback src={logoIcon} alt="Conexão Solidária" className="w-9 h-9 object-contain" />
+          <button onClick={onToggleCollapse}
+            className="text-white opacity-60 hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            title="Expandir Menu">
+            <ChevronRight size={17} />
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between px-1 mb-6">
+          <div className="flex items-center gap-2">
+            <ImageWithFallback src={logoIcon} alt="Conexão Solidária" className="w-9 h-9 object-contain shrink-0" />
+            <span className="text-white font-semibold text-sm leading-tight">Conexão<br/>Solidária</span>
+          </div>
+          <button onClick={onToggleCollapse}
+            className="text-white opacity-60 hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            title="Minimizar Menu">
+            <ChevronLeft size={17} />
+          </button>
+        </div>
+      )}
 
       {NAV_TREE.map(item => {
         const Icon    = item.icon;
@@ -118,31 +164,47 @@ function Sidebar({ activeId, onSelect }: { activeId: string; onSelect: (id: stri
           const active = activeId === item.id;
           return (
             <button key={item.id} onClick={() => onSelect(item.id)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left w-full"
+              className={`flex items-center rounded-lg text-sm font-medium transition-all text-left w-full ${isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2.5"}`}
               style={itemStyle(active)}
+              title={isCollapsed ? item.label : undefined}
               onMouseEnter={e => { if (!active) e.currentTarget.style.background = P.sidebarHover; }}
               onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
               <Icon size={17} strokeWidth={active ? 2 : 1.6} />
-              <span className="flex-1">{item.label}</span>
+              {!isCollapsed && <span className="flex-1">{item.label}</span>}
             </button>
           );
         }
 
         const anyChildActive = item.children.some(c => c.id === activeId);
+
+        const handleGroupClick = () => {
+          if (isCollapsed) {
+            onToggleCollapse();
+            setExpanded(p => ({ ...p, [item.id]: true }));
+          } else {
+            toggle(item.id);
+          }
+        };
+
         return (
           <div key={item.id}>
-            <button onClick={() => toggle(item.id)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left w-full"
-              style={itemStyle(anyChildActive && !isOpen)}
-              onMouseEnter={e => { if (!anyChildActive || isOpen) e.currentTarget.style.background = P.sidebarHover; }}
-              onMouseLeave={e => { if (!anyChildActive || isOpen) e.currentTarget.style.background = (anyChildActive && !isOpen) ? P.sidebarActive : "transparent"; }}>
+            <button onClick={handleGroupClick}
+              className={`flex items-center rounded-lg text-sm font-medium transition-all text-left w-full ${isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2.5"}`}
+              style={itemStyle(anyChildActive && (!isOpen || isCollapsed))}
+              title={isCollapsed ? item.label : undefined}
+              onMouseEnter={e => { if (!anyChildActive || isOpen || isCollapsed) e.currentTarget.style.background = P.sidebarHover; }}
+              onMouseLeave={e => { if (!anyChildActive || isOpen || isCollapsed) e.currentTarget.style.background = (anyChildActive && (!isOpen || isCollapsed)) ? P.sidebarActive : "transparent"; }}>
               <Icon size={17} strokeWidth={1.6} />
-              <span className="flex-1">{item.label}</span>
-              <span className="transition-transform duration-200" style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
-                <ChevronDown size={14} strokeWidth={2} />
-              </span>
+              {!isCollapsed && (
+                <>
+                  <span className="flex-1">{item.label}</span>
+                  <span className="transition-transform duration-200" style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
+                    <ChevronDown size={14} strokeWidth={2} />
+                  </span>
+                </>
+              )}
             </button>
-            {isOpen && (
+            {!isCollapsed && isOpen && (
               <div className="ml-2 mt-0.5 mb-0.5 flex flex-col gap-0.5 border-l pl-3" style={{ borderColor: "rgba(255,255,255,0.12)" }}>
                 {item.children.map(child => {
                   const ChildIcon = child.icon;
@@ -314,6 +376,8 @@ function HomeContent({ username, onNavigate }: { username: string; onNavigate: (
           ))}
         </div>
       </div>
+
+      <Dashboard />
     </div>
   );
 }
@@ -324,6 +388,7 @@ function HomeContent({ username, onNavigate }: { username: string; onNavigate: (
 function AppShell({ username, onLogout }: { username: string; onLogout: () => void }) {
   const [activeNav, setActiveNav] = useState("inicio");
   const [initialView, setInitialView] = useState<'list' | 'form'>('list');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleNavigate = (navId: string, view: 'list' | 'form' = 'list') => {
     setActiveNav(navId);
@@ -336,8 +401,12 @@ function AppShell({ username, onLogout }: { username: string; onLogout: () => vo
       case "instituicoes": return <InstituicoesPage />;
       case "itens":        return <ItensPage initialView={initialView} key={`itens-${initialView}`} />;
       case "usuarios":     return <UsuariosPage />;
+      case "doadores":     return <DoadoresPage key="doadores" />;
+      case "parceiros":    return <ParceirosPage key="parceiros" />;
       case "hist-doacoes": return <HistDoacoesPage />;
       case "mov-estoque":  return <MovEstoquePage />;
+      case "estoque-instituicao": return <EstoqueInstPage />;
+      case "atendimentos": return <AtendimentosPage />;
       case "entrada":      return <EstoquePage tipoInicial="ENTRADA" key="entrada" />;
       case "saida":        return <EstoquePage tipoInicial="SAIDA" key="saida" />;
       case "inicio":
@@ -347,7 +416,12 @@ function AppShell({ username, onLogout }: { username: string; onLogout: () => vo
 
   return (
     <div className="flex h-screen w-full overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <Sidebar activeId={activeNav} onSelect={setActiveNav} />
+      <Sidebar
+        activeId={activeNav}
+        onSelect={setActiveNav}
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(c => !c)}
+      />
       <div className="flex flex-col flex-1 overflow-hidden" style={{ background: P.bg }}>
         <TopBar username={username} onLogout={onLogout} />
         <div className="flex-1 overflow-hidden flex flex-col">

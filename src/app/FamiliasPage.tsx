@@ -281,7 +281,7 @@ function FamiliaForm({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto p-6" style={{ background: 'linear-gradient(135deg,#dce5f4 0%,#eef1f8 50%,#d4ddf0 100%)' }}>
+      <div className="flex-1 overflow-y-auto p-6 bg-[#f8fafd]">
 
         {/* Dados Pessoais */}
         <Section title="Dados do Responsável">
@@ -510,7 +510,7 @@ export function FamiliasPage({ initialView }: { initialView?: 'list' | 'form' })
   const tdCls = 'px-4 py-3 text-sm text-[#3d4f72]';
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#f8fafd]">
       {/* Page header */}
       <div className="px-6 py-5 bg-white border-b border-[#e4e9f4] flex items-center justify-between shrink-0">
         <div>
@@ -554,85 +554,89 @@ export function FamiliasPage({ initialView }: { initialView?: 'list' | 'form' })
         )}
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
-        <table className="w-full border-collapse min-w-[700px]">
-          <thead className="sticky top-0 z-10" style={{ background: '#f8f9fc' }}>
-            <tr className="border-b border-[#e4e9f4]">
-              {([['nomeResponsavel','Nome do Responsável'], ['cpf','CPF'], ['qtdIntegrantes','Integrantes'], ['rendaFamiliarTotal','Renda'], ['situacaoCadastro','Situação'], ['dataHoraCadastro','Cadastro']] as [string,string][]).map(([f, label]) => (
-                <th key={f} className={thCls} onClick={() => handleSort(f)}>
-                  {label}<SortIcon field={f} sortField={sortField} sortDir={sortDir} />
-                </th>
-              ))}
-              <th className="px-4 py-3 text-xs font-semibold text-[#6b7a9e] uppercase tracking-wide text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pageData.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-sm text-[#6b7a9e]">Nenhuma família encontrada.</td></tr>
-            ) : pageData.map((f, idx) => (
-              <tr key={f.id} className="border-b border-[#f0f4fb] transition-colors hover:bg-[#f8f9fc]"
-                style={{ background: idx % 2 === 0 ? 'white' : '#fafbfd' }}>
-                <td className={tdCls + ' font-medium text-[#1a2744]'}>{f.nomeResponsavel}</td>
-                <td className={tdCls}>{fmtCPF(f.cpf)}</td>
-                <td className={tdCls + ' text-center'}>{f.qtdIntegrantes}</td>
-                <td className={tdCls}>{fmtCurrency(f.rendaFamiliarTotal)}</td>
-                <td className={tdCls}><SituacaoBadge s={f.situacaoCadastro} /></td>
-                <td className={tdCls}>{fmtDate(f.dataHoraCadastro)}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => openForm('view', f)} title="Visualizar"
-                      className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-[#2b65bf] hover:bg-blue-50 transition-colors">
-                      <Eye size={15} />
-                    </button>
-                    <button onClick={() => openForm('edit', f)} title="Editar"
-                      className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-[#2b65bf] hover:bg-blue-50 transition-colors">
-                      <Pencil size={15} />
-                    </button>
-                    {f.situacaoCadastro !== 'INATIVO' ? (
-                      <button onClick={() => { setConfirmId(f.id); setConfirmAction('inativar'); }} title="Inativar"
-                        className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-red-500 hover:bg-red-50 transition-colors">
-                        <UserX size={15} />
-                      </button>
-                    ) : (
-                      <button onClick={() => { setConfirmId(f.id); setConfirmAction('ativar'); }} title="Ativar"
-                        className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-green-600 hover:bg-green-50 transition-colors">
-                        <UserCheck size={15} />
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Grid List */}
+      <div className="flex-1 overflow-auto px-8 py-6">
+        <div className="bg-white rounded-2xl border border-[#d0daef] shadow-sm overflow-hidden flex flex-col max-h-full">
+          <div className="overflow-y-auto flex-1">
+            <table className="w-full border-collapse min-w-[700px]">
+              <thead className="sticky top-0 z-10" style={{ background: '#f8f9fc' }}>
+                <tr className="border-b border-[#e4e9f4]">
+                  {([['nomeResponsavel','Nome do Responsável'], ['cpf','CPF'], ['qtdIntegrantes','Integrantes'], ['rendaFamiliarTotal','Renda'], ['situacaoCadastro','Situação'], ['dataHoraCadastro','Cadastro']] as [string,string][]).map(([f, label]) => (
+                    <th key={f} className={thCls} onClick={() => handleSort(f)}>
+                      {label}<SortIcon field={f} sortField={sortField} sortDir={sortDir} />
+                    </th>
+                  ))}
+                  <th className="px-4 py-3 text-xs font-semibold text-[#6b7a9e] uppercase tracking-wide text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageData.length === 0 ? (
+                  <tr><td colSpan={7} className="px-6 py-12 text-center text-sm text-[#6b7a9e]">Nenhuma família encontrada.</td></tr>
+                ) : pageData.map((f, idx) => (
+                  <tr key={f.id} className="border-b border-[#f0f4fb] transition-colors hover:bg-[#f8f9fc]"
+                    style={{ background: idx % 2 === 0 ? 'white' : '#fafbfd' }}>
+                    <td className={tdCls + ' font-medium text-[#1a2744]'}>{f.nomeResponsavel}</td>
+                    <td className={tdCls}>{fmtCPF(f.cpf)}</td>
+                    <td className={tdCls + ' text-center'}>{f.qtdIntegrantes}</td>
+                    <td className={tdCls}>{fmtCurrency(f.rendaFamiliarTotal)}</td>
+                    <td className={tdCls}><SituacaoBadge s={f.situacaoCadastro} /></td>
+                    <td className={tdCls}>{fmtDate(f.dataHoraCadastro)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => openForm('view', f)} title="Visualizar"
+                          className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-[#2b65bf] hover:bg-blue-50 transition-colors">
+                          <Eye size={15} />
+                        </button>
+                        <button onClick={() => openForm('edit', f)} title="Editar"
+                          className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-[#2b65bf] hover:bg-blue-50 transition-colors">
+                          <Pencil size={15} />
+                        </button>
+                        {f.situacaoCadastro !== 'INATIVO' ? (
+                          <button onClick={() => { setConfirmId(f.id); setConfirmAction('inativar'); }} title="Inativar"
+                            className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-red-500 hover:bg-red-50 transition-colors">
+                            <UserX size={15} />
+                          </button>
+                        ) : (
+                          <button onClick={() => { setConfirmId(f.id); setConfirmAction('ativar'); }} title="Ativar"
+                            className="p-1.5 rounded-lg text-[#6b7a9e] hover:text-green-600 hover:bg-green-50 transition-colors">
+                            <UserCheck size={15} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      {/* Pagination */}
-      <div className="px-6 py-3 bg-white border-t border-[#e4e9f4] flex items-center justify-between shrink-0 text-sm text-[#6b7a9e]">
-        <div className="flex items-center gap-3">
-          <span>Exibindo {total === 0 ? 0 : safeP * perPage + 1}–{Math.min(safeP * perPage + perPage, total)} de {total}</span>
-          <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }}
-            className="border border-[#d0daef] rounded-lg px-2 py-1 text-xs bg-white outline-none">
-            {[10, 25, 50].map(n => <option key={n} value={n}>{n} por página</option>)}
-          </select>
-        </div>
-        <div className="flex items-center gap-1">
-          <button disabled={safeP === 0} onClick={() => setPage(safeP - 1)}
-            className="px-3 py-1.5 rounded-lg border border-[#d0daef] text-xs disabled:opacity-40 hover:bg-[#f0f4fb] transition-colors flex items-center gap-1">
-            <ChevronDown className="rotate-90" size={12} /> Anterior
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button key={i} onClick={() => setPage(i)}
-              className="w-8 h-8 rounded-lg text-xs font-medium transition-colors"
-              style={safeP === i ? { background: '#2b65bf', color: 'white' } : { border: '1px solid #d0daef', color: '#6b7a9e', background: 'white' }}>
-              {i + 1}
-            </button>
-          ))}
-          <button disabled={safeP >= totalPages - 1} onClick={() => setPage(safeP + 1)}
-            className="px-3 py-1.5 rounded-lg border border-[#d0daef] text-xs disabled:opacity-40 hover:bg-[#f0f4fb] transition-colors flex items-center gap-1">
-            Próxima <ChevronDown className="-rotate-90" size={12} />
-          </button>
+          {/* Pagination */}
+          <div className="px-6 py-3 bg-white border-t border-[#e4e9f4] flex items-center justify-between shrink-0 text-sm text-[#6b7a9e]">
+            <div className="flex items-center gap-3">
+              <span>Exibindo {total === 0 ? 0 : safeP * perPage + 1}–{Math.min(safeP * perPage + perPage, total)} de {total}</span>
+              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }}
+                className="border border-[#d0daef] rounded-lg px-2 py-1 text-xs bg-white outline-none">
+                {[10, 25, 50].map(n => <option key={n} value={n}>{n} por página</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-1">
+              <button disabled={safeP === 0} onClick={() => setPage(safeP - 1)}
+                className="px-3 py-1.5 rounded-lg border border-[#d0daef] text-xs disabled:opacity-40 hover:bg-[#f0f4fb] transition-colors flex items-center gap-1">
+                <ChevronDown className="rotate-90" size={12} /> Anterior
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button key={i} onClick={() => setPage(i)}
+                  className="w-8 h-8 rounded-lg text-xs font-medium transition-colors"
+                  style={safeP === i ? { background: '#2b65bf', color: 'white' } : { border: '1px solid #d0daef', color: '#6b7a9e', background: 'white' }}>
+                  {i + 1}
+                </button>
+              ))}
+              <button disabled={safeP >= totalPages - 1} onClick={() => setPage(safeP + 1)}
+                className="px-3 py-1.5 rounded-lg border border-[#d0daef] text-xs disabled:opacity-40 hover:bg-[#f0f4fb] transition-colors flex items-center gap-1">
+                Próxima <ChevronDown className="-rotate-90" size={12} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

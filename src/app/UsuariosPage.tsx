@@ -130,7 +130,7 @@ function UsuarioForm({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto p-6" style={{ background: 'linear-gradient(135deg,#dce5f4 0%,#eef1f8 50%,#d4ddf0 100%)' }}>
+      <div className="flex-1 overflow-y-auto p-6 bg-[#f8fafd]">
         <Section title="Dados do Usuário">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">

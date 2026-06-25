@@ -126,4 +126,44 @@ export interface MovimentacaoEstoque {
   observacao: string;
 }
 
+export type StatusDoador = 'ativo' | 'inativo';
+
+export interface Doador {
+  id: number;
+  nome: string;
+  email: string;
+  status: StatusDoador;
+  cpfCnpj: string;
+  telefone: string;
+  observacoes: string;
+  endereco: Endereco;
+}
+
+export type StatusParceiro = 'ativo' | 'inativo';
+
+export interface Parceiro {
+  id: number;
+  nome: string;
+  email: string;
+  status: StatusParceiro;
+  cpfCnpj: string;
+  telefone: string;
+  observacoes: string;
+  endereco: Endereco;
+}
+
+export type TipoDoadorParceiro = 'Doador' | 'Parceiro';
+export type TipoCadastroAtendimento = 'Automatico' | 'Manual';
+
+export interface Atendimento {
+  id: number;
+  dataHora: string;
+  tipoCadastro: TipoCadastroAtendimento;
+  observacao: string;
+  tipoDoador: TipoDoadorParceiro;
+  doadorParceiroId: number;
+}
+
+
+
 

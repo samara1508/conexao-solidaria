@@ -1,4 +1,4 @@
-import { Familia, Instituicao, Item, Usuario, DoacaoFamilia, MovimentacaoEstoque } from './types';
+import { Familia, Instituicao, Item, Usuario, DoacaoFamilia, MovimentacaoEstoque, Doador, Parceiro, Atendimento } from './types';
 
 export const MOCK_FAMILIAS: Familia[] = [
   {
@@ -240,6 +240,105 @@ export const MOCK_DOACOES_FAMILIAS: DoacaoFamilia[] = [
       { nome: 'Shampoo Anticaspa (200ml)', categoria: 'HIGIENE_PESSOAL', quantidade: 1, unidade: 'UNIDADE' },
       { nome: 'Sabonete (90g)', categoria: 'HIGIENE_PESSOAL', quantidade: 10, unidade: 'UNIDADE' }
     ]
+  },
+  {
+    id: 4,
+    instituicaoNome: 'Conexão Solidária Central',
+    instituicaoCnpj: '12345678000100',
+    familiaResponsavel: 'Elizete da Silva',
+    familiaCpf: '12345678901',
+    data: '2026-06-12',
+    itens: [{ nome: 'Feijão Preto (1kg)', categoria: 'ALIMENTO', quantidade: 4, unidade: 'KG' }]
+  },
+  {
+    id: 5,
+    instituicaoNome: 'Filial Norte',
+    instituicaoCnpj: '12345678000281',
+    familiaResponsavel: 'João Carlos Pereira',
+    familiaCpf: '98765432100',
+    data: '2026-06-12',
+    itens: [{ nome: 'Arroz Branco Tio Juca Tipo 1 (1kg)', categoria: 'ALIMENTO', quantidade: 5, unidade: 'KG' }]
+  },
+  {
+    id: 6,
+    instituicaoNome: 'Filial Norte',
+    instituicaoCnpj: '12345678000281',
+    familiaResponsavel: 'Ana Paula Rodrigues',
+    familiaCpf: '33344455566',
+    data: '2026-06-14',
+    itens: [{ nome: 'Macarrão Espaguete (500g)', categoria: 'ALIMENTO', quantidade: 3, unidade: 'PACOTE' }]
+  },
+  {
+    id: 7,
+    instituicaoNome: 'Conexão Solidária Central',
+    instituicaoCnpj: '12345678000100',
+    familiaResponsavel: 'Elizete da Silva',
+    familiaCpf: '12345678901',
+    data: '2026-06-15',
+    itens: [{ nome: 'Sabonete (90g)', categoria: 'HIGIENE_PESSOAL', quantidade: 2, unidade: 'UNIDADE' }]
+  },
+  {
+    id: 8,
+    instituicaoNome: 'Filial Sul',
+    instituicaoCnpj: '12345678000362',
+    familiaResponsavel: 'Maria Aparecida Santos',
+    familiaCpf: '11122233344',
+    data: '2026-06-15',
+    itens: [{ nome: 'Óleo de Soja (900ml)', categoria: 'ALIMENTO', quantidade: 2, unidade: 'LITRO' }]
+  },
+  {
+    id: 9,
+    instituicaoNome: 'Filial Norte',
+    instituicaoCnpj: '12345678000281',
+    familiaResponsavel: 'João Carlos Pereira',
+    familiaCpf: '98765432100',
+    data: '2026-06-15',
+    itens: [{ nome: 'Detergente Ypê (500ml)', categoria: 'LIMPEZA', quantidade: 4, unidade: 'UNIDADE' }]
+  },
+  {
+    id: 10,
+    instituicaoNome: 'Conexão Solidária Central',
+    instituicaoCnpj: '12345678000100',
+    familiaResponsavel: 'Elizete da Silva',
+    familiaCpf: '12345678901',
+    data: '2026-06-18',
+    itens: [{ nome: 'Macarrão Espaguete (500g)', categoria: 'ALIMENTO', quantidade: 5, unidade: 'PACOTE' }]
+  },
+  {
+    id: 11,
+    instituicaoNome: 'Filial Sul',
+    instituicaoCnpj: '12345678000362',
+    familiaResponsavel: 'Maria Aparecida Santos',
+    familiaCpf: '11122233344',
+    data: '2026-06-18',
+    itens: [{ nome: 'Casaco de Lã Infantil', categoria: 'VESTUARIO', quantidade: 2, unidade: 'UNIDADE' }]
+  },
+  {
+    id: 12,
+    instituicaoNome: 'Conexão Solidária Central',
+    instituicaoCnpj: '12345678000100',
+    familiaResponsavel: 'Ana Paula Rodrigues',
+    familiaCpf: '33344455566',
+    data: '2026-06-20',
+    itens: [{ nome: 'Arroz Branco Tio Juca Tipo 1 (1kg)', categoria: 'ALIMENTO', quantidade: 10, unidade: 'KG' }]
+  },
+  {
+    id: 13,
+    instituicaoNome: 'Filial Norte',
+    instituicaoCnpj: '12345678000281',
+    familiaResponsavel: 'João Carlos Pereira',
+    familiaCpf: '98765432100',
+    data: '2026-06-21',
+    itens: [{ nome: 'Sabonete (90g)', categoria: 'HIGIENE_PESSOAL', quantidade: 3, unidade: 'UNIDADE' }]
+  },
+  {
+    id: 14,
+    instituicaoNome: 'Conexão Solidária Central',
+    instituicaoCnpj: '12345678000100',
+    familiaResponsavel: 'Elizete da Silva',
+    familiaCpf: '12345678901',
+    data: '2026-06-21',
+    itens: [{ nome: 'Óleo de Soja (900ml)', categoria: 'ALIMENTO', quantidade: 3, unidade: 'LITRO' }]
   }
 ];
 
@@ -309,5 +408,154 @@ export const MOCK_MOVIMENTACOES_ESTOQUE: MovimentacaoEstoque[] = [
     quantidade: 13,
     dataHora: '2026-06-22T16:30:00',
     observacao: 'Produtos de higiene pessoal entregues.'
+  },
+  {
+    id: 7,
+    instituicaoNome: 'Conexão Solidária Central',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Tio João Ltda',
+    destinatario: 'Conexão Solidária Central',
+    quantidade: 100,
+    dataHora: '2026-06-12T10:00:00',
+    observacao: 'Doação de arroz e cestas secas.'
+  },
+  {
+    id: 8,
+    instituicaoNome: 'Conexão Solidária Central',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Maria de Souza',
+    destinatario: 'Conexão Solidária Central',
+    quantidade: 50,
+    dataHora: '2026-06-15T11:30:00',
+    observacao: 'Doação de vestuário de inverno.'
+  },
+  {
+    id: 9,
+    instituicaoNome: 'Filial Norte',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Hortifruti Caxias',
+    destinatario: 'Filial Norte',
+    quantidade: 220,
+    dataHora: '2026-06-18T09:00:00',
+    observacao: 'Doação de legumes frescos e frutas da estação.'
+  },
+  {
+    id: 10,
+    instituicaoNome: 'Filial Sul',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Associação Amigos do Bem',
+    destinatario: 'Filial Sul',
+    quantidade: 180,
+    dataHora: '2026-06-21T16:00:00',
+    observacao: 'Doação de leite e suplementos alimentares.'
+  },
+  {
+    id: 11,
+    instituicaoNome: 'Conexão Solidária Central',
+    tipoMovimento: 'ENTRADA',
+    transacao: 'DOACAO',
+    emitente: 'Distribuidora RS',
+    destinatario: 'Conexão Solidária Central',
+    quantidade: 85,
+    dataHora: '2026-06-23T14:00:00',
+    observacao: 'Produtos de limpeza em geral.'
   }
 ];
+
+export const MOCK_DOADORES: Doador[] = [
+  {
+    id: 1,
+    nome: 'Tio João Ltda',
+    email: 'tio.joao@gmail.com',
+    status: 'ativo',
+    cpfCnpj: '00000000000000',
+    telefone: '33869023',
+    observacoes: 'Realizam doação mensal de cestas de arroz',
+    endereco: { cep: '95020050', bairro: 'Centro', rua: 'Rua Sinimbu', cidade: 'Caxias do Sul', estadoUF: 'RS', numero: '123', complemento: 'Prédio comercial A' }
+  },
+  {
+    id: 2,
+    nome: 'Maria de Souza',
+    email: 'maria.souza@yahoo.com.br',
+    status: 'ativo',
+    cpfCnpj: '12345678909',
+    telefone: '54991122334',
+    observacoes: 'Doadora pontual de vestuário e calçados',
+    endereco: { cep: '95010010', bairro: 'São Pelegrino', rua: 'Av. Júlio de Castilhos', cidade: 'Caxias do Sul', estadoUF: 'RS', numero: '450', complemento: 'Apto 204' }
+  },
+  {
+    id: 3,
+    nome: 'Supermercado Sol',
+    email: 'contato@supermercadosol.com.br',
+    status: 'inativo',
+    cpfCnpj: '98765432000199',
+    telefone: '5432219000',
+    observacoes: 'Parceria finalizada em 2025',
+    endereco: { cep: '95034000', bairro: 'Centro', rua: 'Rua Flores', cidade: 'Caxias do Sul', estadoUF: 'RS', numero: '99', complemento: '' }
+  }
+];
+
+export const MOCK_PARCEIROS: Parceiro[] = [
+  {
+    id: 1,
+    nome: 'Associação Comunitária Esperança',
+    email: 'contato@aceesperanca.org',
+    status: 'ativo',
+    cpfCnpj: '12345678000100',
+    telefone: '5432298765',
+    observacoes: 'Parceiro para triagem e divulgação',
+    endereco: { cep: '95020050', bairro: 'Centro', rua: 'Rua Sinimbu', cidade: 'Caxias do Sul', estadoUF: 'RS', numero: '780', complemento: 'Sala 4' }
+  },
+  {
+    id: 2,
+    nome: 'Logística Expressa Sul',
+    email: 'contato@logexpress.com.br',
+    status: 'ativo',
+    cpfCnpj: '98765432000188',
+    telefone: '5432205566',
+    observacoes: 'Apoio logístico e transporte de doações pesadas',
+    endereco: { cep: '95034000', bairro: 'Centro', rua: 'Rua Flores', cidade: 'Caxias do Sul', estadoUF: 'RS', numero: '1200', complemento: 'Galpão B' }
+  },
+  {
+    id: 3,
+    nome: 'Gráfica Caxias',
+    email: 'comercial@graficacaxias.com.br',
+    status: 'inativo',
+    cpfCnpj: '11222333000144',
+    telefone: '5432214400',
+    observacoes: 'Inativo temporariamente para balanço',
+    endereco: { cep: '95010010', bairro: 'São Pelegrino', rua: 'Av. Júlio de Castilhos', cidade: 'Caxias do Sul', estadoUF: 'RS', numero: '10', complemento: '' }
+  }
+];
+
+export const MOCK_ATENDIMENTOS: Atendimento[] = [
+  {
+    id: 1,
+    dataHora: '2026-06-22T10:00:00',
+    tipoCadastro: 'Manual',
+    observacao: 'Triagem e alinhamento de entregas de cestas de arroz.',
+    tipoDoador: 'Doador',
+    doadorParceiroId: 1
+  },
+  {
+    id: 2,
+    dataHora: '2026-06-23T14:30:00',
+    tipoCadastro: 'Manual',
+    observacao: 'Reunião para acertar cronograma de transporte de mantimentos.',
+    tipoDoador: 'Parceiro',
+    doadorParceiroId: 2
+  },
+  {
+    id: 3,
+    dataHora: '2026-06-24T16:00:00',
+    tipoCadastro: 'Manual',
+    observacao: 'Coleta de donativo de vestuário de inverno.',
+    tipoDoador: 'Doador',
+    doadorParceiroId: 2
+  }
+];
+
